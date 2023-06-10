@@ -1,4 +1,4 @@
-package com.tong.streamdpexp.experiment.logger
+package com.tong.streamdpexp.logger
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

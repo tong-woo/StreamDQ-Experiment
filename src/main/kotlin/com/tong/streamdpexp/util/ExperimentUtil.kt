@@ -1,4 +1,4 @@
-package com.tong.streamdpexp.experiment.util
+package com.tong.streamdpexp.util
 
 import com.stefan_grafberger.streamdq.experiment.model.RedditPost
 import com.stefan_grafberger.streamdq.experiment.model.WikiClickStream

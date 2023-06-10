@@ -6,8 +6,8 @@ import com.stefan_grafberger.streamdq.anomalydetection.strategies.DetectionStrat
 import com.stefan_grafberger.streamdq.checks.AggregateConstraintResult
 import com.stefan_grafberger.streamdq.checks.aggregate.ApproxUniquenessConstraint
 import com.stefan_grafberger.streamdq.experiment.model.RedditPost
-import com.tong.streamdpexp.experiment.logger.ExperimentLogger
-import com.tong.streamdpexp.experiment.util.ExperimentUtil
+import com.tong.streamdpexp.logger.ExperimentLogger
+import com.tong.streamdpexp.util.ExperimentUtil
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows

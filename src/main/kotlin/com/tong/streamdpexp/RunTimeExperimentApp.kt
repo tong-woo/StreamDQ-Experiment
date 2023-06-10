@@ -1,6 +1,7 @@
-package com.tong.streamdpexp.experiment
+package com.tong.streamdpexp
 
-import com.tong.streamdpexp.experiment.logger.ExperimentLogger
+import com.tong.streamdpexp.experiment.Experiment
+import com.tong.streamdpexp.logger.ExperimentLogger
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
