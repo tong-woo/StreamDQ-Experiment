@@ -1,7 +1,21 @@
 # Experiment CLI App
 Experiment setup of master project
-## Run Time Experiment
 
+## Initial build
+First of all, build by maven
+```bash
+mvn clean install
+```
+
+## Cli Usage
+```console
+Options:
+--path, -p -> path of the csv dataset (always required) { String }
+--size, -s [1000] -> size of the flink window { Int }
+--help, -h -> Usage info
+```
+
+## Run Time Experiment
 For reddit data set, run command below:
 ```bash
 cd target
