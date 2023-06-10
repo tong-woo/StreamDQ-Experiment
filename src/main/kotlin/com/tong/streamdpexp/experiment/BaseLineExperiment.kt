@@ -1,6 +1,5 @@
 package com.tong.streamdpexp.experiment
 
-import com.amazon.deequ.repository.memory.InMemoryMetricsRepository
 import org.apache.spark.sql.SparkSession
 
 class BaseLineExperiment {
@@ -25,15 +24,20 @@ class BaseLineExperiment {
                 .load(path)
             df.show()
 
-            val metricsRepository = InMemoryMetricsRepository()
-
+//            val metricsRepository = InMemoryMetricsRepository()
+//            val uniqueness = Uniqueness(mutableListOf("score"), null)
+//
 //            val verificationResult = VerificationSuite()
 //                .onData(df)
 //                .useRepository(metricsRepository)
 //                .addAnomalyCheck(
-//                    RelativeRateOfChangeStrategy(1.0, 2.0, 1),
-//                    Size(),
-//                    null
+//                    RelativeRateOfChangeStrategy(Some(1.0), Some(2.0), 1),
+//                    uniqueness,
+//                    Some(
+//                        AnomalyCheckConfig(
+//                            CheckLevel.Error(), "Anomaly check to succeed",
+//                        null, Some(0), Some(11))
+//                    )
 //                )
 //                .run()
         }

@@ -1,15 +1,17 @@
 package com.tong.streamdpexp.experiment
 
+import com.tong.streamdpexp.experiment.logger.ExperimentLogger
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
 import kotlinx.cli.required
 
-class ExperimentApp {
+class RunTimeExperimentApp {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val parser = ArgParser("ExperimentApp")
+            ExperimentLogger().info("RunTimeExperimentApp started")
+            val parser = ArgParser("RunTimeExperimentApp")
             val path by parser.option(
                 ArgType.String,
                 shortName = "p",
@@ -22,7 +24,11 @@ class ExperimentApp {
             ).default(1000)
             parser.parse(args)
             val exp = Experiment()
-            exp.testAnomalyDetectionRunTimeOnRedditDataSetEndToEnd(path, size.toLong())
+            if (path.contains("reddit")) {
+                exp.testRunTimeOnRedditDataSetWithOnlyAggregation(path, size.toLong())
+            } else {
+                exp.testRunTimePerformanceOnClickStream(path, size.toLong())
+            }
         }
     }
 }

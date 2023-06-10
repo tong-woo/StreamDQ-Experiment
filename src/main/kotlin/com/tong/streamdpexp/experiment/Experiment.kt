@@ -1,5 +1,6 @@
 package com.tong.streamdpexp.experiment
 
+import com.stefan_grafberger.streamdq.VerificationSuite
 import com.stefan_grafberger.streamdq.anomalydetection.detectors.aggregatedetector.AggregateAnomalyCheck
 import com.stefan_grafberger.streamdq.anomalydetection.strategies.DetectionStrategy
 import com.stefan_grafberger.streamdq.checks.AggregateConstraintResult
@@ -19,35 +20,92 @@ class Experiment {
     private var log = ExperimentLogger()
     private var util = ExperimentUtil()
 
-    fun testAnomalyDetectionRunTimeOnRedditDataSetEndToEnd(path: String, windowSize: Long = 1000) {
-        //given
+    fun testRunTimePerformanceOnReddit(
+        expressionString: String,
+        path: String,
+        windowSize: Long = 1000
+    ) {
+        //setup env
         val env = util.createStreamExecutionEnvironment()
-        val detector = AggregateAnomalyCheck()
-            .onApproxUniqueness("score")
-            .withWindow(TumblingProcessingTimeWindows.of(Time.milliseconds(windowSize)))
-            .withStrategy(DetectionStrategy().onlineNormal(0.0, 0.3))
+        env.config.latencyTrackingInterval = 1000
+        val anomalyCheck = AggregateAnomalyCheck()
+            .onApproxUniqueness(expressionString)
+            .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))
+            .withStrategy(DetectionStrategy().onlineNormal(0.0, 0.3, 0.0))
             .build()
         //setup deserialization
-        val eventTimeStart = System.nanoTime()
-        val source = util.generateFileSourceFromPath(path)
+        val source = util.generateRedditFileSourceFromPath(path)
         val redditPostStream = env
             .fromSource(source, WatermarkStrategy.noWatermarks(), "Reddit Posts")
             .assignTimestampsAndWatermarks(
                 WatermarkStrategy.forMonotonousTimestamps<RedditPost>()
                     .withTimestampAssigner { post, _ -> post.createdUtc!!.toLong() }
             )
-        //when
-        val (actualAnomalies, processingTimeLatency) = util.executeAndMeasureTimeMillis {
-            detector.detectAnomalyStream(redditPostStream)
-        }
-        val eventTimeLatency = System.nanoTime() - eventTimeStart
-        //then
-        //sink
-        actualAnomalies.print("AnomalyCheckResult stream output")
+        //detection
+        val verificationResult = VerificationSuite()
+            .onDataStream(redditPostStream, env.config)
+            .addAnomalyChecks(mutableListOf(anomalyCheck))
+            .build()
+        val actualAnomalies = verificationResult.getResultsForCheck(anomalyCheck)
+        //
+        actualAnomalies!!.print("AnomalyCheckResult stream output")
         val jobExecutionResult = env.execute()
-        log.info("Event Time Latency: " + TimeUnit.NANOSECONDS.toMillis(eventTimeLatency) + " ms")
-        log.info("Processing Time Latency): $processingTimeLatency ms")
         log.info("Net Fink Job Execution Run Time: ${jobExecutionResult.netRuntime} ms")
+    }
+
+    fun testRunTimePerformanceOnClickStream(path: String, windowSize: Long = 1000) {
+        //setup env
+        val env = util.createStreamExecutionEnvironment()
+        val anomalyCheck = AggregateAnomalyCheck()
+            .onApproxUniqueness("count")
+            .withWindow(TumblingProcessingTimeWindows.of(Time.milliseconds(windowSize)))
+            .withStrategy(DetectionStrategy().onlineNormal(0.0, 0.3, 0.0))
+            .build()
+        //setup deserialization
+        val source = util.generateWikiClickFileSourceFromPath(path)
+        val wikiClickStream = env
+            .fromSource(source, WatermarkStrategy.noWatermarks(), "Wiki Click Info")
+        //detection
+        val verificationResult = VerificationSuite()
+            .onDataStream(wikiClickStream, env.config)
+            .addAnomalyChecks(mutableListOf(anomalyCheck))
+            .build()
+        val actualAnomalies = verificationResult.getResultsForCheck(anomalyCheck)
+        //
+        actualAnomalies!!.print("AnomalyCheckResult stream output")
+        val jobExecutionResult = env.execute()
+        log.info("Net Fink Job Execution Run Time: ${jobExecutionResult.netRuntime} ms")
+    }
+
+    fun testLatency(path: String, windowSize: Long = 1000) {
+        //setup env
+        val env = util.createStreamExecutionEnvironment()
+        env.config.latencyTrackingInterval = 1000
+        val anomalyCheck = AggregateAnomalyCheck()
+            .onCompleteness("score")
+            .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))
+            .withStrategy(DetectionStrategy().onlineNormal(0.0, 0.3, 0.0))
+            .build()
+        //setup deserialization
+        val source = util.generateRedditFileSourceFromPath(path)
+        val redditPostStream = env
+            .fromSource(source, WatermarkStrategy.noWatermarks(), "Reddit Posts")
+            .assignTimestampsAndWatermarks(
+                WatermarkStrategy.forMonotonousTimestamps<RedditPost>()
+                    .withTimestampAssigner { post, _ -> post.createdUtc!!.toLong() }
+            )
+        //detection
+        val (actualAnomalies, processingTimeLatency) = util.executeAndMeasureTimeMillis {
+            val verificationResult = VerificationSuite()
+                .onDataStream(redditPostStream, env.config)
+                .addAnomalyChecks(mutableListOf(anomalyCheck))
+                .build()
+            verificationResult.getResultsForCheck(anomalyCheck)
+        }
+        //
+        actualAnomalies!!.print("AnomalyCheckResult stream output")
+        env.execute()
+        log.info("Processing Time Latency: $processingTimeLatency ms")
     }
 
     fun testRunTimeOnRedditDataSetWithOnlyAggregation(path: String, windowSize: Long = 1000) {
@@ -55,7 +113,7 @@ class Experiment {
         val env = util.createStreamExecutionEnvironment()
         //setup deserialization
         val eventTimeStart = System.nanoTime()
-        val source = util.generateFileSourceFromPath(path)
+        val source = util.generateRedditFileSourceFromPath(path)
         val redditPostStream = env
             .fromSource(source, WatermarkStrategy.noWatermarks(), "Reddit Posts")
             .assignTimestampsAndWatermarks(
