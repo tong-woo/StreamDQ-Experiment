@@ -1,3 +1,3 @@
 experimentDate,experimentName,timeInMs,fileName
-"2023-06-11 21:54","runtime experiment",1336,"ClickStream/1M_clickstream_enwiki-2023-04.csv"
-"2023-06-11 21:55","runtime experiment",25284,"reddit_posts/20M_reddit_posts.csv"
+"2023-06-11 22:03","runtime experiment",1370,"ClickStream/1M_clickstream_enwiki-2023-04.csv"
+"2023-06-11 22:03","runtime experiment",24452,"reddit_posts/20M_reddit_posts.csv"
