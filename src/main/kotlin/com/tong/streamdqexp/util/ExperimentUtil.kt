@@ -1,8 +1,8 @@
 package com.tong.streamdqexp.util
 
+import com.tong.streamdqexp.model.ExperimentResult
 import com.tong.streamdqexp.model.RedditPost
 import com.tong.streamdqexp.model.WikiClickStream
-import com.tong.streamdqexp.model.ExperimentResult
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.configuration.RestOptions
@@ -98,9 +98,9 @@ class ExperimentUtil {
             enable(CsvParser.Feature.SKIP_EMPTY_LINES)
         }
         val schema = CsvSchema.builder()
-            .addColumn("experimentTime")
+            .addColumn("experimentDate")
             .addColumn("experimentName")
-            .addColumn("time")
+            .addColumn("timeInMs")
             .addColumn("fileName")
             .build()
             .withColumnSeparator(',')

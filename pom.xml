@@ -1,245 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-
-  <groupId>com.tong</groupId>
   <artifactId>streamdqexp</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>streamdpexp</name>
-  <description>streamdpexp</description>
-
-  <properties>
-    <java.version>1.8</java.version>
-    <kotlin.version>1.8.21</kotlin.version>
-    <kotlinx.version>0.3.3</kotlinx.version>
-    <flink.version>1.16.0</flink.version>
-    <spark.version>2.4.8</spark.version>
-    <scala.version>2.12</scala.version>
-    <flink.scala.version>2.12</flink.scala.version>
-    <junit-jupiter.version>5.3.1</junit-jupiter.version>
-    <mockito.version>2.22.0</mockito.version>
-    <mockito-kotlin.version>1.6.0</mockito-kotlin.version>
-    <slf4j.version>1.7.30</slf4j.version>
-    <datasketch.version>3.3.0</datasketch.version>
-    <log4j.version>1.2.17</log4j.version>
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-    <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
-    <jetbrain-annotations.version>13.0</jetbrain-annotations.version>
-    <ktlint-maven-plugin.version>1.13.1</ktlint-maven-plugin.version>
-    <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
-    <assertj.version>3.11.1</assertj.version>
-
-    <!-- Kotlin -->
-    <kotlin.version>1.4.32</kotlin.version>
-    <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-    <!-- plugins -->
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-    <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>com.stefan_grafberger</groupId>
-      <artifactId>streamdq</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.amazon.deequ</groupId>
-      <artifactId>deequ</artifactId>
-      <version>2.0.0-spark-3.1</version>
-    </dependency>
-    <!-- Spark dependencies-->
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_${scala.version}</artifactId>
-      <version>${spark.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-sql_${scala.version}</artifactId>
-      <version>${spark.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.databricks</groupId>
-      <artifactId>spark-csv_2.10</artifactId>
-      <version>1.4.0</version>
-    </dependency>
-    <!-- Apache Flink dependencies -->
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-java</artifactId>
-      <version>${flink.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-streaming-java</artifactId>
-      <version>${flink.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-streaming-scala_2.12</artifactId>
-      <version>${flink.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-runtime-web</artifactId>
-      <version>${flink.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-avro</artifactId>
-      <version>${flink.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-databind</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- Flink CSV Connector -->
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-csv</artifactId>
-      <version>${flink.version}</version>
-    </dependency>
-
-    <!-- Flink text file Connector -->
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-connector-files</artifactId>
-      <version>${flink.version}</version>
-    </dependency>
-
-    <!-- Allows to run the job on your local machine -->
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-clients</artifactId>
-      <version>${flink.version}</version>
-    </dependency>
-
-    <!-- logging -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-
-    <!-- commandline parser-->
-    <dependency>
-      <groupId>org.jetbrains.kotlinx</groupId>
-      <artifactId>kotlinx-cli-jvm</artifactId>
-      <version>${kotlinx.version}</version>
-    </dependency>
-
-    <!-- test -->
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit-jupiter.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit-jupiter.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-      <version>${junit-jupiter.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>${mockito.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.nhaarman</groupId>
-      <artifactId>mockito-kotlin</artifactId>
-      <version>${mockito-kotlin.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${assertj.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Add logging framework, to produce console output when running in the IDE. -->
-    <!-- These dependencies are excluded from the application JAR by default. -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-stdlib</artifactId>
-      <version>${kotlin.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-stdlib-jdk8</artifactId>
-      <version>${kotlin.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-test</artifactId>
-      <version>${kotlin.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- LomBok Project -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.26</version>
-    </dependency>
-  </dependencies>
 
   <build>
-    <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-    <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
     <plugins>
       <plugin>
-        <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-maven-plugin</artifactId>
-        <version>${kotlin.version}</version>
-        <executions>
-          <execution>
-            <id>compile</id>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>test-compile</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>test-compile</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <jvmTarget>1.8</jvmTarget>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <id>compile</id>
+          </execution>
+          <execution>
+            <goals>
+              <goal>test-compile</goal>
+            </goals>
+            <id>test-compile</id>
+            <phase>test-compile</phase>
+          </execution>
+        </executions>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <version>${kotlin.version}</version>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <source>8</source>
+          <target>8</target>
+        </configuration>
         <executions>
           <execution>
             <id>default-compile</id>
@@ -250,38 +45,30 @@
             <phase>none</phase>
           </execution>
           <execution>
-            <id>java-compile</id>
-            <phase>compile</phase>
             <goals>
               <goal>compile</goal>
             </goals>
+            <id>java-compile</id>
+            <phase>compile</phase>
           </execution>
           <execution>
-            <id>java-test-compile</id>
-            <phase>test-compile</phase>
             <goals>
               <goal>testCompile</goal>
             </goals>
+            <id>java-test-compile</id>
+            <phase>test-compile</phase>
           </execution>
         </executions>
-        <configuration>
-          <source>8</source>
-          <target>8</target>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>${maven-compiler-plugin.version}</version>
       </plugin>
 
       <!-- Create fat jar with all dependencies -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>${maven-shade-plugin.version}</version>
         <executions>
           <!-- Run shade goal on package phase -->
           <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
             <configuration>
               <createDependencyReducedPom>false</createDependencyReducedPom>
               <filters>
@@ -297,9 +84,222 @@
                 </filter>
               </filters>
             </configuration>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <phase>package</phase>
           </execution>
         </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>${maven-shade-plugin.version}</version>
       </plugin>
     </plugins>
+    <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+    <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
   </build>
+  <dependencies>
+    <dependency>
+      <artifactId>streamdq</artifactId>
+      <groupId>com.stefan_grafberger</groupId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>deequ</artifactId>
+      <groupId>com.amazon.deequ</groupId>
+      <version>2.0.0-spark-3.1</version>
+    </dependency>
+    <!-- Spark dependencies-->
+    <dependency>
+      <artifactId>spark-core_${scala.version}</artifactId>
+      <groupId>org.apache.spark</groupId>
+      <version>${spark.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>spark-sql_${scala.version}</artifactId>
+      <groupId>org.apache.spark</groupId>
+      <version>${spark.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>spark-csv_2.10</artifactId>
+      <groupId>com.databricks</groupId>
+      <version>1.4.0</version>
+    </dependency>
+    <!-- Apache Flink dependencies -->
+    <dependency>
+      <artifactId>flink-java</artifactId>
+      <groupId>org.apache.flink</groupId>
+      <version>${flink.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>flink-streaming-java</artifactId>
+      <groupId>org.apache.flink</groupId>
+      <version>${flink.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>flink-streaming-scala_2.12</artifactId>
+      <groupId>org.apache.flink</groupId>
+      <version>${flink.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>flink-runtime-web</artifactId>
+      <groupId>org.apache.flink</groupId>
+      <version>${flink.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>flink-avro</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>jackson-databind</artifactId>
+          <groupId>com.fasterxml.jackson.core</groupId>
+        </exclusion>
+      </exclusions>
+      <groupId>org.apache.flink</groupId>
+      <version>${flink.version}</version>
+    </dependency>
+
+    <!-- Flink CSV Connector -->
+    <dependency>
+      <artifactId>flink-csv</artifactId>
+      <groupId>org.apache.flink</groupId>
+      <version>${flink.version}</version>
+    </dependency>
+
+    <!-- Flink text file Connector -->
+    <dependency>
+      <artifactId>flink-connector-files</artifactId>
+      <groupId>org.apache.flink</groupId>
+      <version>${flink.version}</version>
+    </dependency>
+
+    <!-- Allows to run the job on your local machine -->
+    <dependency>
+      <artifactId>flink-clients</artifactId>
+      <groupId>org.apache.flink</groupId>
+      <version>${flink.version}</version>
+    </dependency>
+
+    <!-- logging -->
+    <dependency>
+      <artifactId>slf4j-api</artifactId>
+      <groupId>org.slf4j</groupId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <!-- commandline parser-->
+    <dependency>
+      <artifactId>kotlinx-cli-jvm</artifactId>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <version>${kotlinx.version}</version>
+    </dependency>
+
+    <!-- test -->
+    <dependency>
+      <artifactId>junit-jupiter-api</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <scope>test</scope>
+      <version>${junit-jupiter.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <scope>test</scope>
+      <version>${junit-jupiter.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>junit-jupiter-params</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <scope>test</scope>
+      <version>${junit-jupiter.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <groupId>org.mockito</groupId>
+      <version>${mockito.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>mockito-kotlin</artifactId>
+      <groupId>com.nhaarman</groupId>
+      <scope>test</scope>
+      <version>${mockito-kotlin.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>assertj-core</artifactId>
+      <groupId>org.assertj</groupId>
+      <scope>test</scope>
+      <version>${assertj.version}</version>
+    </dependency>
+
+    <!-- Add logging framework, to produce console output when running in the IDE. -->
+    <!-- These dependencies are excluded from the application JAR by default. -->
+    <dependency>
+      <artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.slf4j</groupId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>log4j</artifactId>
+      <groupId>log4j</groupId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>kotlin-stdlib</artifactId>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>kotlin-test</artifactId>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <scope>test</scope>
+      <version>${kotlin.version}</version>
+    </dependency>
+
+    <!-- LomBok Project -->
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <version>1.18.26</version>
+    </dependency>
+  </dependencies>
+  <description>streamdpexp</description>
+  <groupId>com.tong</groupId>
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>streamdpexp</name>
+
+  <properties>
+    <assertj.version>3.11.1</assertj.version>
+    <datasketch.version>3.3.0</datasketch.version>
+    <flink.scala.version>2.12</flink.scala.version>
+    <flink.version>1.16.0</flink.version>
+    <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
+    <java.version>1.8</java.version>
+    <jetbrain-annotations.version>13.0</jetbrain-annotations.version>
+    <junit-jupiter.version>5.3.1</junit-jupiter.version>
+    <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+    <kotlin.version>1.8.21</kotlin.version>
+    <kotlin.version>1.4.32</kotlin.version>
+    <kotlinx.version>0.3.3</kotlinx.version>
+    <ktlint-maven-plugin.version>1.13.1</ktlint-maven-plugin.version>
+    <log4j.version>1.2.17</log4j.version>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
+    <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
+    <mockito-kotlin.version>1.6.0</mockito-kotlin.version>
+
+    <!-- Kotlin -->
+    <mockito.version>2.22.0</mockito.version>
+    <scala.version>2.12</scala.version>
+    <!-- plugins -->
+    <slf4j.version>1.7.30</slf4j.version>
+    <spark.version>2.4.8</spark.version>
+  </properties>
+
+  <version>0.0.1-SNAPSHOT</version>
 </project>

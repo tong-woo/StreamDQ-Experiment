@@ -57,8 +57,8 @@ class Experiment {
         //save result
         val result = ExperimentResult(
             experimentName = "runtime experiment",
-            time = jobExecutionResult.netRuntime,
-            fileName = path
+            timeInMs = jobExecutionResult.netRuntime,
+            fileName = path.replace("/Users/wutong/Desktop/experiment/dataset/", "")
         )
         util.writeResultToCsvFile(result, RUNTIME_OUTPUT_FILE_PATH)
     }
@@ -87,8 +87,8 @@ class Experiment {
         //save result
         val result = ExperimentResult(
             experimentName = "runtime experiment",
-            time = jobExecutionResult.netRuntime,
-            fileName = path
+            timeInMs = jobExecutionResult.netRuntime,
+            fileName = path.replace("/Users/wutong/Desktop/experiment/dataset/", "")
         )
         util.writeResultToCsvFile(result, RUNTIME_OUTPUT_FILE_PATH)
     }

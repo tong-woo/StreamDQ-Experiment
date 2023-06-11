@@ -4,11 +4,11 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonPro
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@JsonPropertyOrder("experimentTime", "experimentName", "time", "fileName")
+@JsonPropertyOrder("experimentDate", "experimentName", "timeInMs", "fileName")
 data class ExperimentResult constructor(
-    val experimentTime: String = LocalDateTime.now()
+    val experimentDate: String = LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
     val experimentName: String,
-    val time: Long,
+    val timeInMs: Long,
     val fileName: String
 )
