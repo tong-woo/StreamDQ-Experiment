@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.tong</groupId>
-  <artifactId>streamdpexp</artifactId>
+  <artifactId>streamdqexp</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>streamdpexp</name>
   <description>streamdpexp</description>
