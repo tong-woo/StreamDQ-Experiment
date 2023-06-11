@@ -1,7 +1,7 @@
-package com.tong.streamdpexp
+package com.tong.streamdqexp
 
-import com.tong.streamdpexp.experiment.Experiment
-import com.tong.streamdpexp.logger.ExperimentLogger
+import com.tong.streamdqexp.experiment.Experiment
+import com.tong.streamdqexp.logger.ExperimentLogger
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
@@ -26,9 +26,9 @@ class RunTimeExperimentApp {
             parser.parse(args)
             val exp = Experiment()
             if (path.contains("reddit")) {
-                exp.testRunTimeOnRedditDataSetWithOnlyAggregation(path, size.toLong())
+                exp.testRunTimeOnReddit(path, size.toLong())
             } else {
-                exp.testRunTimePerformanceOnClickStream(path, size.toLong())
+                exp.testRunTimeOnClickStream(path, size.toLong())
             }
         }
     }

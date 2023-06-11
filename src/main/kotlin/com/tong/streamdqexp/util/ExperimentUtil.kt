@@ -1,7 +1,8 @@
-package com.tong.streamdpexp.util
+package com.tong.streamdqexp.util
 
-import com.stefan_grafberger.streamdq.experiment.model.RedditPost
-import com.stefan_grafberger.streamdq.experiment.model.WikiClickStream
+import com.tong.streamdqexp.model.RedditPost
+import com.tong.streamdqexp.model.WikiClickStream
+import com.tong.streamdqexp.model.ExperimentResult
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.configuration.RestOptions
@@ -11,11 +12,15 @@ import org.apache.flink.formats.csv.CsvReaderFormat
 import org.apache.flink.shaded.guava30.com.google.common.base.Function
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.DeserializationFeature
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.csv.CsvMapper
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.csv.CsvParser
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.csv.CsvSchema
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
+import java.io.File
+import java.io.FileOutputStream
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import kotlin.math.ceil
+
 
 class ExperimentUtil {
     fun createStreamExecutionEnvironment(): StreamExecutionEnvironment {
@@ -81,5 +86,25 @@ class ExperimentUtil {
         override fun getRawType(): Type = raw
         override fun getActualTypeArguments(): Array<out Type> = args
         override fun getOwnerType(): Type? = null
+    }
+
+    fun writeResultToCsvFile(result: ExperimentResult, filePath: String) {
+        val csvOutputFile = File(filePath)
+        if (!csvOutputFile.exists()) {
+            csvOutputFile.createNewFile()
+        }
+        val csvMapper = CsvMapper().apply {
+            enable(CsvParser.Feature.TRIM_SPACES)
+            enable(CsvParser.Feature.SKIP_EMPTY_LINES)
+        }
+        val schema = CsvSchema.builder()
+            .addColumn("experimentTime")
+            .addColumn("experimentName")
+            .addColumn("time")
+            .addColumn("fileName")
+            .build()
+            .withColumnSeparator(',')
+        val outputStream = FileOutputStream(csvOutputFile, true)
+        csvMapper.writer(schema).writeValues(outputStream).write(result)
     }
 }

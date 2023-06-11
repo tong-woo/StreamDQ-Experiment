@@ -1,4 +1,4 @@
-package com.tong.streamdpexp.experiment
+package com.tong.streamdqexp.experiment
 
 import org.apache.spark.sql.SparkSession
 
@@ -11,7 +11,7 @@ class BaseLineExperiment {
                 .builder()
                 .appName("Java Spark SQL data sources example")
                 .config("spark.master", "local")
-                .getOrCreate()
+                .orCreate
 
             val path = "/Users/wutong/Desktop/experiment/dataset/reddit_posts/20M_reddit_posts.csv"
             val df = spark.read()
