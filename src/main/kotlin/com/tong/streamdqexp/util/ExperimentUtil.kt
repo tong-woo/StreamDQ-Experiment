@@ -15,6 +15,8 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.csv.Csv
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.csv.CsvParser
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.csv.CsvSchema
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
+import scala.collection.JavaConverters
+import scala.collection.Seq
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.reflect.ParameterizedType
@@ -80,6 +82,10 @@ class ExperimentUtil {
     fun percentile(latencies: List<Long>, percentile: Double): Long {
         val index = ceil(percentile / 100.0 * latencies.size).toInt()
         return latencies[index - 1]
+    }
+
+    fun <T> convertListToSeq(inputList: List<T?>): Seq<T?>? {
+        return JavaConverters.asScalaIteratorConverter(inputList.iterator()).asScala().toSeq()
     }
 
     fun getType(raw: Class<*>, vararg args: Type) = object : ParameterizedType {
