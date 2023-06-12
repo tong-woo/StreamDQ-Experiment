@@ -1,7 +1,7 @@
 # Experiment CLI App
 
-Experiment setup of master project
-result has been saved to: <br /> [experiment result folder](experimentresult)
+Experiment setup of my master thesis project<br />
+The result has been saved to: [experiment result folder](experimentresult)
 
 ## Initial build
 
