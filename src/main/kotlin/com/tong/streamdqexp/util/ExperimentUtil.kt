@@ -80,6 +80,7 @@ class ExperimentUtil {
     }
 
     fun percentile(latencies: List<Long>, percentile: Double): Long {
+        latencies.sorted().filter { element -> element in 0 until 9223370350253956883 }
         val index = ceil(percentile / 100.0 * latencies.size).toInt()
         return latencies[index - 1]
     }

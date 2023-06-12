@@ -8,6 +8,8 @@ import com.stefan_grafberger.streamdq.checks.aggregate.ApproxUniquenessConstrain
 import com.tong.streamdqexp.logger.ExperimentLogger
 import com.tong.streamdqexp.model.ExperimentResult
 import com.tong.streamdqexp.model.RedditPost
+import com.tong.streamdqexp.model.WikiClickStream
+import com.tong.streamdqexp.processfunction.AnomalyCheckResultProcessFunction
 import com.tong.streamdqexp.util.ExperimentUtil
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.api.common.typeinfo.TypeInformation
@@ -22,6 +24,8 @@ class Experiment {
     private var util = ExperimentUtil()
     private val RUNTIME_OUTPUT_FILE_PATH =
         "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/runtime.csv"
+    private val LATENCY_OUTPUT_FILE_PATH =
+        "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/latency.csv"
 
     /**
      * test net run time
@@ -80,7 +84,8 @@ class Experiment {
             .onDataStream(wikiClickStream, env.config)
             .addAnomalyChecks(mutableListOf(anomalyCheck))
             .build()
-        val actualAnomalies = verificationResult.getResultsForCheck(anomalyCheck)
+        val actualAnomalies = verificationResult
+            .getResultsForCheck(anomalyCheck)
         //sink
         actualAnomalies!!.print("AnomalyCheckResult stream output")
         val jobExecutionResult = env.execute()
@@ -95,6 +100,8 @@ class Experiment {
 
     /**
      * test processing time latency
+     * We calculate the event Time Lag
+     * which is the current processing time - current watermark
      */
     fun testLatencyOnReddit(path: String, windowSize: Long = 1000) {
         //setup env
@@ -108,23 +115,83 @@ class Experiment {
         //setup deserialization
         val source = util.generateRedditFileSourceFromPath(path)
         val redditPostStream = env
-            .fromSource(source, WatermarkStrategy.noWatermarks(), "Reddit Posts")
+            .fromSource(
+                source,
+                WatermarkStrategy.noWatermarks(),
+                "Reddit Posts"
+            )
             .assignTimestampsAndWatermarks(
                 WatermarkStrategy.forMonotonousTimestamps<RedditPost>()
-                    .withTimestampAssigner { post, _ -> post.createdUtc!!.toLong() }
+                    .withTimestampAssigner { _, _ -> System.currentTimeMillis() }
             )
         //detection
-        val (actualAnomalies, processingTimeLatency) = util.executeAndMeasureTimeMillis {
-            val verificationResult = VerificationSuite()
-                .onDataStream(redditPostStream, env.config)
-                .addAnomalyChecks(mutableListOf(anomalyCheck))
-                .build()
-            verificationResult.getResultsForCheck(anomalyCheck)
-        }
-        //
+        val verificationResult = VerificationSuite()
+            .onDataStream(redditPostStream, env.config)
+            .addAnomalyChecks(mutableListOf(anomalyCheck))
+            .build()
+        //process to (result, latency) pair
+        val actualAnomalies = verificationResult
+            .getResultsForCheck(anomalyCheck)
+            ?.process(AnomalyCheckResultProcessFunction(windowSize))
+        //sink
         actualAnomalies!!.print("AnomalyCheckResult stream output")
         env.execute()
-        log.info("Processing Time Latency: $processingTimeLatency ms")
+        val latencies = actualAnomalies
+            .map { pair -> pair.f1 }
+            .returns(Long::class.java)
+            .executeAndCollect().asSequence().toList()
+        //save result
+        val result = ExperimentResult(
+            experimentName = "latency experiment",
+            timeInMs = util.percentile(latencies, 95.0),
+            fileName = path.replace("/Users/wutong/Desktop/experiment/dataset/", "")
+        )
+        util.writeResultToCsvFile(result, LATENCY_OUTPUT_FILE_PATH)
+    }
+
+    fun testLatencyOnClickStream(path: String, windowSize: Long = 1000) {
+        //setup env
+        val env = util.createStreamExecutionEnvironment()
+        env.config.latencyTrackingInterval = 1000
+        val anomalyCheck = AggregateAnomalyCheck()
+            .onCompleteness("count")
+            .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))
+            .withStrategy(DetectionStrategy().onlineNormal(0.0, 0.3, 0.0))
+            .build()
+        //setup deserialization
+        val source = util.generateWikiClickFileSourceFromPath(path)
+        val wikiClickStream = env
+            .fromSource(
+                source,
+                WatermarkStrategy.noWatermarks(),
+                "wiki click stream"
+            )
+            .assignTimestampsAndWatermarks(
+                WatermarkStrategy.forMonotonousTimestamps<WikiClickStream>()
+                    .withTimestampAssigner { _, _ -> System.currentTimeMillis() }
+            )
+        //detection
+        val verificationResult = VerificationSuite()
+            .onDataStream(wikiClickStream, env.config)
+            .addAnomalyChecks(mutableListOf(anomalyCheck))
+            .build()
+        val actualAnomalies = verificationResult
+            .getResultsForCheck(anomalyCheck)
+            ?.process(AnomalyCheckResultProcessFunction(windowSize))
+        //sink
+        actualAnomalies!!.print("AnomalyCheckResult stream output")
+        env.execute()
+        val latencies = actualAnomalies
+            .map { pair -> pair.f1 }
+            .returns(Long::class.java)
+            .executeAndCollect().asSequence().toList()
+        //save result
+        val result = ExperimentResult(
+            experimentName = "latency experiment",
+            timeInMs = util.percentile(latencies, 95.0),
+            fileName = path.replace("/Users/wutong/Desktop/experiment/dataset/", "")
+        )
+        util.writeResultToCsvFile(result, LATENCY_OUTPUT_FILE_PATH)
     }
 
     /**
