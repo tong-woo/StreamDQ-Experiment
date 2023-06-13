@@ -88,10 +88,12 @@ kotlin -cp streamdqexp-0.0.1-SNAPSHOT.jar com.tong.streamdqexp.LatencyExperiment
 cd target
 kotlin -cp streamdqexp-0.0.1-SNAPSHOT.jar com.tong.streamdqexp.BaselineLatencyExperimentApp -p /Users/wutong/Desktop/experiment/dataset/ClickStream/5M_clickstream_enwiki-2023-04.csv -c count
 ``` 
+
 ## Overhead experiment
 
-To measure the overhead of anomaly detection, 
-we measure the **component run time** of only aggregate constraint computation. Then make the subtraction to get overhead
+To measure the overhead of anomaly detection,
+we measure the **component run time** of only aggregate constraint computation. Then make the
+subtraction to get overhead
 
 Again for reddit:
 
@@ -99,9 +101,28 @@ Again for reddit:
 cd target
 kotlin -cp streamdqexp-0.0.1-SNAPSHOT.jar com.tong.streamdqexp.OverheadExperimentApp -p /Users/wutong/Desktop/experiment/dataset/reddit_posts/20M_reddit_posts.csv -s 1000
 ``` 
+
 For wiki click stream:
 
 ```bash
 cd target
 kotlin -cp streamdqexp-0.0.1-SNAPSHOT.jar com.tong.streamdqexp.OverheadExperimentApp -p /Users/wutong/Desktop/experiment/dataset/ClickStream/5M_clickstream_enwiki-2023-04.csv -s 1000
 ``` 
+
+## Window size experiment
+
+For this one, we run an anomaly detection program on the same aggregation constraint as well as same
+strategy,
+on windows size 10, 100, 1000, 10000, 100000, collect the run time
+
+We can reuse the experiment script in [run time experiment](#run-time-experiment)
+
+## Influence of anomaly detection check number in verification suite on run time experiment
+Script to be added...
+
+In this experiment, we want to measure the influence of anomaly detection check number in
+the verification suite on run time
+
+action: For a same dataset. we add 1, 2, 3, 4, 5 anomaly checks with different strategies in the
+verification suite separately,
+and measure the run time
