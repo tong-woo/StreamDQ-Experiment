@@ -88,3 +88,20 @@ kotlin -cp streamdqexp-0.0.1-SNAPSHOT.jar com.tong.streamdqexp.LatencyExperiment
 cd target
 kotlin -cp streamdqexp-0.0.1-SNAPSHOT.jar com.tong.streamdqexp.BaselineLatencyExperimentApp -p /Users/wutong/Desktop/experiment/dataset/ClickStream/5M_clickstream_enwiki-2023-04.csv -c count
 ``` 
+## Overhead experiment
+
+To measure the overhead of anomaly detection, 
+we measure the **component run time** of only aggregate constraint computation. Then make the subtraction to get overhead
+
+Again for reddit:
+
+```bash
+cd target
+kotlin -cp streamdqexp-0.0.1-SNAPSHOT.jar com.tong.streamdqexp.OverheadExperimentApp -p /Users/wutong/Desktop/experiment/dataset/reddit_posts/20M_reddit_posts.csv -s 1000
+``` 
+For wiki click stream:
+
+```bash
+cd target
+kotlin -cp streamdqexp-0.0.1-SNAPSHOT.jar com.tong.streamdqexp.OverheadExperimentApp -p /Users/wutong/Desktop/experiment/dataset/ClickStream/5M_clickstream_enwiki-2023-04.csv -s 1000
+``` 
