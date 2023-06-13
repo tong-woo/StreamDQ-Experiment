@@ -1,3 +1,6 @@
 "2023-06-12 22:39","latency experiment",257,"reddit_posts/20M_reddit_posts.csv"
 "2023-06-12 22:40","latency experiment",152,"ClickStream/1M_clickstream_enwiki-2023-04.csv"
 "2023-06-12 22:44","latency experiment",276,"reddit_posts/100M_reddit_posts.csv"
+"2023-06-13 09:50","latency experiment",33,"ClickStream/1M_clickstream_enwiki-2023-04.csv"
+"2023-06-13 09:54","latency experiment",58,"ClickStream/1M_clickstream_enwiki-2023-04.csv"
+"2023-06-13 10:29","latency experiment",45,"ClickStream/5M_clickstream_enwiki-2023-04.csv"

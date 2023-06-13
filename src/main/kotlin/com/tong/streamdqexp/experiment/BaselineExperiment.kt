@@ -6,6 +6,7 @@ import com.amazon.deequ.analyzers.Analyzer
 import com.amazon.deequ.analyzers.FrequenciesAndNumRows
 import com.amazon.deequ.analyzers.Uniqueness
 import com.amazon.deequ.anomalydetection.OnlineNormalStrategy
+import com.amazon.deequ.anomalydetection.RelativeRateOfChangeStrategy
 import com.amazon.deequ.checks.CheckLevel
 import com.amazon.deequ.checks.CheckStatus
 import com.amazon.deequ.metrics.Metric
@@ -19,11 +20,16 @@ import org.apache.spark.sql.SparkSession
 import scala.Option
 import scala.Some
 
+/**
+ * baseline experiment using aws deequ library
+ */
 class BaselineExperiment {
 
     private val util = ExperimentUtil()
     private val RUNTIME_OUTPUT_FILE_PATH =
         "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/runtimeBaseline.csv"
+    private val LATENCY_OUTPUT_FILE_PATH =
+        "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/latencyBaseline.csv"
 
     fun testRunTimeOnDataSet(path: String, columnName: String) {
         val conf = SparkConf().setAppName("Java Spark SQL data sources example")
@@ -47,7 +53,6 @@ class BaselineExperiment {
                 .option("mode", "DROPMALFORMED")
                 .option("timestampFormat", "MM-dd-yyyy hh mm ss")
                 .load(path)
-
             val metricsRepository = InMemoryMetricsRepository()
             val verificationResult = VerificationSuite()
                 .onData(df)
@@ -96,5 +101,59 @@ class BaselineExperiment {
             fileName = path.replace("/Users/wutong/Desktop/experiment/dataset/", "")
         )
         util.writeResultToCsvFile(result, RUNTIME_OUTPUT_FILE_PATH)
+    }
+
+    fun testLatencyOnDataSet(path: String, columnName: String) {
+        val conf = SparkConf().setAppName("Java Spark SQL data sources example")
+            .setMaster("local")
+            .set("spark.testing.memory", "471859200")
+        val sc = SparkContext(conf)
+        val spark = SparkSession
+            .builder()
+            .appName("Java Spark SQL data sources example")
+            .config(conf)
+            .sparkContext(sc)
+            .orCreate
+        // initialize sparkMeasure
+        val taskMetrics = ch.cern.sparkmeasure.TaskMetrics(spark) // initialize sparkMeasure
+        val df = spark.read()
+            .format("com.databricks.spark.csv")
+            .option("header", "true")
+            .option("delimiter", ",")
+            .option("treatEmptyValuesAsNulls", "true")
+            .option("mode", "DROPMALFORMED")
+            .option("timestampFormat", "MM-dd-yyyy hh mm ss")
+            .load(path)
+        val metricsRepository = InMemoryMetricsRepository()
+        taskMetrics.runAndMeasure {
+            VerificationSuite()
+                .onData(df)
+                .useRepository(metricsRepository)
+                .addAnomalyCheck(
+                    RelativeRateOfChangeStrategy(Some(0.1), Some(0.3), 1),
+                    Uniqueness(
+                        util.convertListToSeq(listOf(columnName)),
+                        Option.empty()
+                    ) as Analyzer<FrequenciesAndNumRows, Metric<Any>>,
+                    Some(
+                        AnomalyCheckConfig(
+                            CheckLevel.Error(), "Anomaly check to succeed",
+                            null, Some(0.toLong()), Some(11.toLong())
+                        )
+                    )
+                )
+                .run()
+        }
+        val collectedTaskMetrics = taskMetrics.aggregateTaskMetrics()
+        ExperimentLogger().info("Spark Job Duration = ${collectedTaskMetrics.get("taskDuration")}")
+        spark.stop()
+        //save result
+        val result = ExperimentResult(
+            experimentName = "baseline latency",
+            timeInMs = collectedTaskMetrics.get("taskDuration").toString().filter { it.isDigit() }
+                .toLong(),
+            fileName = path.replace("/Users/wutong/Desktop/experiment/dataset/", "")
+        )
+        util.writeResultToCsvFile(result, LATENCY_OUTPUT_FILE_PATH)
     }
 }

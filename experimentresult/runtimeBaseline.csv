@@ -2,3 +2,4 @@ experimentDate,experimentName,timeInMs,fileName
 "2023-06-12 18:08","baseline runtime",155,"ClickStream/1M_clickstream_enwiki-2023-04.csv"
 "2023-06-12 18:10","baseline runtime",56609,"reddit_posts/20M_reddit_posts.csv"
 "2023-06-12 18:21","baseline runtime",164,"ClickStream/1M_clickstream_enwiki-2023-04.csv"
+"2023-06-13 09:55","baseline runtime",161,"ClickStream/1M_clickstream_enwiki-2023-04.csv"

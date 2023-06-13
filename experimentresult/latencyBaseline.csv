@@ -1,0 +1,6 @@
+"2023-06-13 09:32","baseline latency",56113,"reddit_posts/20M_reddit_posts.csv"
+"2023-06-13 09:37","baseline latency",55929,"reddit_posts/20M_reddit_posts.csv"
+"2023-06-13 10:05","baseline latency",56464,"reddit_posts/20M_reddit_posts.csv"
+"2023-06-13 10:22","baseline latency",4297,"ClickStream/10M_clickstream_enwiki-2023-04.csv"
+"2023-06-13 10:22","baseline latency",2864,"ClickStream/5M_clickstream_enwiki-2023-04.csv"
+"2023-06-13 10:27","baseline latency",4090,"ClickStream/10M_clickstream_enwiki-2023-04.csv"
