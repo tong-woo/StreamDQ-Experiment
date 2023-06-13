@@ -11,11 +11,11 @@ import org.apache.flink.util.Collector
 class AnomalyCheckResultProcessFunction(private val windowSize: Long) :
     ProcessFunction<AnomalyCheckResult, Tuple2<AnomalyCheckResult, Long>>() {
 
-    private lateinit var eventTimeLag: DescriptiveStatisticsHistogram
+    private lateinit var eventAndProcessingTimeLag: DescriptiveStatisticsHistogram
 
     override fun open(parameters: Configuration?) {
-        this.eventTimeLag = runtimeContext.metricGroup.histogram(
-            "processingAndIngestionTimeLag",
+        this.eventAndProcessingTimeLag = runtimeContext.metricGroup.histogram(
+            "eventAndProcessingTimeLag",
             DescriptiveStatisticsHistogram(windowSize.toInt())
         )
     }
@@ -27,7 +27,7 @@ class AnomalyCheckResultProcessFunction(private val windowSize: Long) :
     ) {
         val latency = context.timerService().currentProcessingTime() - context.timerService()
             .currentWatermark()
-        eventTimeLag.update(latency)
+        eventAndProcessingTimeLag.update(latency)
         collector.collect(Tuple2(anomalyCheckResult, latency))
     }
 }
