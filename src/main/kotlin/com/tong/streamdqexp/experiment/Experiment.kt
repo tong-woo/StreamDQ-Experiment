@@ -210,7 +210,7 @@ class Experiment {
             )
         //when
         val aggregateConstraintResultStream = redditPostStream
-            .windowAll(TumblingProcessingTimeWindows.of(Time.milliseconds(windowSize)))
+            .windowAll(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))
             .aggregate(
                 ApproxUniquenessConstraint("score").getAggregateFunction(
                     TypeInformation.of(
@@ -243,7 +243,7 @@ class Experiment {
             )
         //aggregate computation
         val aggregateConstraintResultStream = wikiClickStream
-            .windowAll(TumblingProcessingTimeWindows.of(Time.milliseconds(windowSize)))
+            .windowAll(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))
             .aggregate(
                 ApproxUniquenessConstraint("count").getAggregateFunction(
                     TypeInformation.of(
@@ -263,4 +263,6 @@ class Experiment {
         util.writeResultToCsvFile(result, OVERHEAD_OUTPUT_FILE_PATH)
         log.info("Net Fink Job Execution Run Time: ${jobExecutionResult.netRuntime} ms")
     }
+
+
 }

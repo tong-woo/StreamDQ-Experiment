@@ -23,12 +23,21 @@ class LatencyExperimentApp {
                 shortName = "s",
                 description = "size of the window"
             ).default(1000)
+            val repeat by parser.option(
+                ArgType.Int,
+                shortName = "r",
+                description = "repeat times of the experiment"
+            ).default(1)
             parser.parse(args)
             val exp = Experiment()
             if (path.contains("reddit")) {
-                exp.testLatencyOnReddit(path, size.toLong())
+                repeat(repeat) {
+                    exp.testLatencyOnReddit(path, size.toLong())
+                }
             } else {
-                exp.testLatencyOnClickStream(path, size.toLong())
+                repeat(repeat) {
+                    exp.testLatencyOnClickStream(path, size.toLong())
+                }
             }
         }
     }

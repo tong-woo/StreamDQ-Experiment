@@ -23,12 +23,21 @@ class RunTimeExperimentApp {
                 shortName = "s",
                 description = "size of the window"
             ).default(1000)
+            val repeat by parser.option(
+                ArgType.Int,
+                shortName = "r",
+                description = "repeat times of the experiment"
+            ).default(1)
             parser.parse(args)
             val exp = Experiment()
             if (path.contains("reddit")) {
-                exp.testRunTimeOnReddit(path, size.toLong())
+                repeat(repeat){
+                    exp.testRunTimeOnReddit(path, size.toLong())
+                }
             } else {
-                exp.testRunTimeOnClickStream(path, size.toLong())
+                repeat(repeat){
+                    exp.testRunTimeOnClickStream(path, size.toLong())
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import com.tong.streamdqexp.experiment.BaselineExperiment
 import com.tong.streamdqexp.logger.ExperimentLogger
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
+import kotlinx.cli.default
 import kotlinx.cli.required
 
 class BaselineLatencyExperimentApp {
@@ -22,9 +23,16 @@ class BaselineLatencyExperimentApp {
                 shortName = "c",
                 description = "column name of the csv dataset"
             ).required()
+            val repeat by parser.option(
+                ArgType.Int,
+                shortName = "r",
+                description = "repeat times of the experiment"
+            ).default(1)
             parser.parse(args)
             val exp = BaselineExperiment()
-            exp.testLatencyOnDataSet(path, columnName)
+            repeat(repeat) {
+                exp.testLatencyOnDataSet(path, columnName)
+            }
         }
     }
 }
