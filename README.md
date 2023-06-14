@@ -16,6 +16,7 @@ mvn clean install
 ```bash
 cd exptools
 ./runtime-start.sh
+./latency-start.sh
 ``` 
 
 ## Cli usage
