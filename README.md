@@ -11,6 +11,13 @@ First of all, build by maven
 mvn clean install
 ```
 
+## Shortcut
+
+```bash
+cd exptools
+./runtime-exp-start.sh
+``` 
+
 ## Cli usage
 
 ```console
@@ -18,6 +25,7 @@ Options:
 --path, -p -> path of the csv dataset (always required) { String }
 --size, -s [1000] -> size of the flink window { Int } for experiment
 --columnName, -c -> column name of the csv dataset (always required) { String } for baseline experiment
+--repeat, -r [1] -> repeat times of the experiment { Int }
 --help, -h -> Usage info
 ```
 
@@ -118,6 +126,7 @@ on windows size 10, 100, 1000, 10000, 100000, collect the run time
 We can reuse the experiment script in [run time experiment](#run-time-experiment)
 
 ## Influence of anomaly detection check number in verification suite on run time experiment
+
 Script to be added...
 
 In this experiment, we want to measure the influence of anomaly detection check number in
