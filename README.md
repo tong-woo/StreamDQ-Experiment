@@ -15,7 +15,7 @@ mvn clean install
 
 ```bash
 cd exptools
-./runtime-exp-start.sh
+./runtime-start.sh
 ``` 
 
 ## Cli usage
