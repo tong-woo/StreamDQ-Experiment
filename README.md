@@ -17,6 +17,9 @@ mvn clean install
 cd exptools
 ./runtime-start.sh
 ./latency-start.sh
+./overhead-start.sh
+./window-size-config-start-start.sh
+./check-number-config-start.sh
 ``` 
 
 ## Cli usage
@@ -26,6 +29,7 @@ Options:
 --path, -p -> path of the csv dataset (always required) { String }
 --size, -s [1000] -> size of the flink window { Int } for experiment
 --columnName, -c -> column name of the csv dataset (always required) { String } for baseline experiment
+--checkNumber, -c [1] -> anomaly check number config [1,4] { Int }--checkNumber, -c [1] -> anomaly check number config [1,4] { Int }
 --repeat, -r [1] -> repeat times of the experiment { Int }
 --help, -h -> Usage info
 ```
