@@ -206,20 +206,18 @@ class Experiment {
             .fromSource(source, WatermarkStrategy.noWatermarks(), "Reddit Posts")
             .assignTimestampsAndWatermarks(
                 WatermarkStrategy.forMonotonousTimestamps<RedditPost>()
-                    .withTimestampAssigner { _, _ -> System.currentTimeMillis() }
+                    .withTimestampAssigner { post, _ -> post.createdUtc!!.toLong() }
             )
         //when
-        val aggregateConstraintResultStream = redditPostStream
+        val actualAnomalies = redditPostStream
             .windowAll(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))
             .aggregate(
                 ApproxUniquenessConstraint("score").getAggregateFunction(
-                    TypeInformation.of(
-                        RedditPost::class.java
-                    ), env.config
+                    redditPostStream.type, env.config
                 )
-            )
+            ).map { res -> res.aggregate }
         //sink
-        aggregateConstraintResultStream.print("aggregate result stream")
+        actualAnomalies.print()
         val jobExecutionResult = env.execute()
         //save result
         val result = ExperimentResult(
@@ -237,22 +235,16 @@ class Experiment {
         val source = util.generateWikiClickFileSourceFromPath(path)
         val wikiClickStream = env
             .fromSource(source, WatermarkStrategy.noWatermarks(), "Wiki Click Stream")
-            .assignTimestampsAndWatermarks(
-                WatermarkStrategy.forMonotonousTimestamps<WikiClickStream>()
-                    .withTimestampAssigner { _, _ -> System.currentTimeMillis() }
-            )
         //aggregate computation
-        val aggregateConstraintResultStream = wikiClickStream
-            .windowAll(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))
+        val actualAnomalies = wikiClickStream
+            .windowAll(TumblingProcessingTimeWindows.of(Time.milliseconds(windowSize)))
             .aggregate(
                 ApproxUniquenessConstraint("count").getAggregateFunction(
-                    TypeInformation.of(
-                        WikiClickStream::class.java
-                    ), env.config
+                    wikiClickStream.type, env.config
                 )
-            )
+            ).map { res -> res.aggregate }
         //sink
-        aggregateConstraintResultStream.print("aggregate result stream")
+        actualAnomalies.print()
         val jobExecutionResult = env.execute()
         //save result
         val result = ExperimentResult(
