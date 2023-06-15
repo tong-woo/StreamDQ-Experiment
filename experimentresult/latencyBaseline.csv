@@ -1,3 +1,4 @@
+experimentDate,experimentName,timeInMs,fileName
 "2023-06-14 22:42","baseline latency",54907,"reddit_posts/20M_reddit_posts.csv"
 "2023-06-14 22:43","baseline latency",54484,"reddit_posts/20M_reddit_posts.csv"
 "2023-06-14 22:44","baseline latency",54382,"reddit_posts/20M_reddit_posts.csv"
