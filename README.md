@@ -1,6 +1,8 @@
-# Experiment CLI App
+# Experiment cli app
 
-Experiment setup of my master thesis project<br />
+Experiment setup of my master thesis project: 
+**_Automating Data Quality Validation Involving Anomaly
+Detection For Large Data Streams_**<br />
 The result has been saved to: [experiment result folder](experimentresult)
 
 ## Initial build
@@ -137,6 +139,6 @@ Script to be added...
 In this experiment, we want to measure the influence of anomaly detection check number in
 the verification suite on run time
 
-action: For a same dataset. we add 1, 2, 3, 4, 5 anomaly checks with different strategies in the
+action: For a same dataset. we add 1, 2, 3, 4 anomaly checks with different strategies in the
 verification suite separately,
 and measure the run time
