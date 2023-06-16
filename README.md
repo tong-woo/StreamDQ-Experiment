@@ -1,4 +1,4 @@
-# Experiment cli app
+# Experiment Cli App
 
 Experiment setup of my master thesis project: 
 **_Automating Data Quality Validation Involving Anomaly
