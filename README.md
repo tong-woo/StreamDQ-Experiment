@@ -2,7 +2,7 @@
 
 Experiment setup of my master thesis project: 
 **_Automating Data Quality Validation Involving Anomaly
-Detection For Large Data Streams_**<br />
+Detection For Large Data Streams_**<br /><br />
 The result has been saved to: [experiment result folder](experimentresult)
 
 ## Initial build
