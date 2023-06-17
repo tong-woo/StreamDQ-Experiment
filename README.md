@@ -20,7 +20,7 @@ cd exptools
 ./runtime-start.sh
 ./latency-start.sh
 ./overhead-start.sh
-./window-size-config-start-start.sh
+./window-size-config-start.sh
 ./check-number-config-start.sh
 ``` 
 
