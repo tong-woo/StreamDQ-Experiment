@@ -11,7 +11,10 @@ import com.tong.streamdqexp.model.WikiClickStream
 import com.tong.streamdqexp.processfunction.AnomalyCheckResultProcessFunction
 import com.tong.streamdqexp.util.ExperimentUtil
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
+import org.apache.flink.configuration.Configuration
+import org.apache.flink.configuration.RestOptions
 import org.apache.flink.streaming.api.datastream.DataStream
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
 import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows
@@ -31,6 +34,8 @@ class Experiment {
             "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/window-config.csv"
     private val CHECKNUMBER_CONFIG_OUTPUT_FILE_PATH =
             "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/check-number-config.csv"
+    private val PARTITON_CONFIG_OUTPUT_FILE_PATH =
+            "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/partition-number-config.csv"
 
     /**
      * test net run time
@@ -536,5 +541,76 @@ class Experiment {
                 fileName = path.replace("/Users/wutong/Desktop/experiment/dataset/", "")
         )
         util.writeResultToCsvFile(result, CHECKNUMBER_CONFIG_OUTPUT_FILE_PATH)
+    }
+
+    /**
+     * test net run time on partitioned data stream
+     */
+    fun testPartitionedRunTimeOnReddit(
+            path: String,
+            windowSize: Long = 1000
+    ) {
+        //setup env
+        val env = util.createStreamExecutionEnvironment()
+        //setup deserialization
+        val source = util.generateRedditFileSourceFromPath(path)
+        val redditPostStream = env
+                .fromSource(source, WatermarkStrategy.noWatermarks(), "Reddit Posts")
+                .assignTimestampsAndWatermarks(
+                        WatermarkStrategy.forMonotonousTimestamps<RedditPost>()
+                                .withTimestampAssigner { post, _ -> post.createdUtc!!.toLong() }
+                )
+                .keyBy { post -> post.partitionId }
+        //detection
+        val strategy = DetectionStrategy().onlineNormal(0.0, 0.3)
+        val constraint = ApproxUniquenessConstraint("score")
+        val actualAnomalies = strategy.detect(redditPostStream
+                .windowAll(GlobalWindows.create())
+                .trigger(CountTrigger.of(windowSize))
+                .aggregate(constraint.getAggregateFunction(redditPostStream.type, redditPostStream.executionConfig)))
+        //sink
+        actualAnomalies.print("AnomalyCheckResult stream output")
+        val jobExecutionResult = env.execute()
+        //save result
+        val partitionNumber = path.replace("/Users/wutong/Desktop/experiment/dataset/reddit_posts/", "")
+                .replace("_partitions_20M_Reddit.csv", "")
+        val result = ExperimentResult(
+                experimentName = "partition number experiment: " + partitionNumber,
+                timeInMs = jobExecutionResult.netRuntime,
+                fileName = path.replace("/Users/wutong/Desktop/experiment/dataset/", "")
+        )
+        util.writeResultToCsvFile(result, PARTITON_CONFIG_OUTPUT_FILE_PATH)
+    }
+
+    fun testPartitionedRunTimeOnClickStream(path: String, windowSize: Long = 1000) {
+        //setup env
+        val conf = Configuration()
+        conf.set(RestOptions.PORT, 8082)
+        val env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(conf)
+        env.parallelism = 1
+        //setup deserialization
+        val source = util.generateWikiClickFileSourceFromPath(path)
+        val wikiClickStream = env
+                .fromSource(source, WatermarkStrategy.noWatermarks(), "Wiki Click Info")
+                .keyBy { click -> click.partitionId }
+        //detection
+        val strategy = DetectionStrategy().onlineNormal(0.0, 0.3)
+        val constraint = ApproxUniquenessConstraint("count")
+        val actualAnomalies = strategy.detect(wikiClickStream
+                .windowAll(GlobalWindows.create())
+                .trigger(CountTrigger.of(windowSize))
+                .aggregate(constraint.getAggregateFunction(wikiClickStream.type, wikiClickStream.executionConfig)))
+        //sink
+        actualAnomalies.print("AnomalyCheckResult stream output")
+        val jobExecutionResult = env.execute()
+        //save result
+        val partitionNumber = path.replace("/Users/wutong/Desktop/experiment/dataset/ClickStream/", "")
+                .replace("_partitions_2M_clickstream.csv", "")
+        val result = ExperimentResult(
+                experimentName = "partition number experiment: " + partitionNumber,
+                timeInMs = jobExecutionResult.netRuntime,
+                fileName = path.replace("/Users/wutong/Desktop/experiment/dataset/", "")
+        )
+        util.writeResultToCsvFile(result, PARTITON_CONFIG_OUTPUT_FILE_PATH)
     }
 }
