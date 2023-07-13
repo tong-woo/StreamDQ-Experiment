@@ -12,9 +12,11 @@ import com.tong.streamdqexp.processfunction.AnomalyCheckResultProcessFunction
 import com.tong.streamdqexp.util.ExperimentUtil
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.streaming.api.datastream.DataStream
+import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
+import org.apache.flink.streaming.api.windowing.triggers.CountTrigger
 
 class Experiment {
 
@@ -273,11 +275,6 @@ class Experiment {
     ) {
         //setup env
         val env = util.createStreamExecutionEnvironment()
-        val anomalyCheck = AggregateAnomalyCheck()
-                .onApproxUniqueness("score")
-                .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))
-                .withStrategy(DetectionStrategy().absoluteChange(0.0, 0.3, 1))
-                .build()
         //setup deserialization
         val source = util.generateRedditFileSourceFromPath(path)
         val redditPostStream = env
@@ -287,11 +284,12 @@ class Experiment {
                                 .withTimestampAssigner { post, _ -> post.createdUtc!!.toLong() }
                 )
         //detection
-        val verificationResult = VerificationSuite()
-                .onDataStream(redditPostStream, env.config)
-                .addAnomalyChecks(mutableListOf(anomalyCheck))
-                .build()
-        val actualAnomalies = verificationResult.getResultsForCheck(anomalyCheck)
+        val strategy = DetectionStrategy().absoluteChange(0.0, 0.3, 1)
+        val constraint = ApproxUniquenessConstraint("score")
+        val actualAnomalies = strategy.detect(redditPostStream
+                .windowAll(GlobalWindows.create())
+                .trigger(CountTrigger.of(windowSize))
+                .aggregate(constraint.getAggregateFunction(redditPostStream.type, redditPostStream.executionConfig)))
         //sink
         actualAnomalies!!.print("AnomalyCheckResult stream output")
         val jobExecutionResult = env.execute()
@@ -307,22 +305,17 @@ class Experiment {
     fun testWindowConfigOnClickStream(path: String, windowSize: Long = 1000) {
         //setup env
         val env = util.createStreamExecutionEnvironment()
-        val anomalyCheck = AggregateAnomalyCheck()
-                .onApproxUniqueness("count")
-                .withWindow(TumblingProcessingTimeWindows.of(Time.milliseconds(windowSize)))
-                .withStrategy(DetectionStrategy().absoluteChange(0.0, 0.3, 1))
-                .build()
         //setup deserialization
         val source = util.generateWikiClickFileSourceFromPath(path)
         val wikiClickStream = env
                 .fromSource(source, WatermarkStrategy.noWatermarks(), "Wiki Click Info")
         //detection
-        val verificationResult = VerificationSuite()
-                .onDataStream(wikiClickStream, env.config)
-                .addAnomalyChecks(mutableListOf(anomalyCheck))
-                .build()
-        val actualAnomalies = verificationResult
-                .getResultsForCheck(anomalyCheck)
+        val strategy = DetectionStrategy().absoluteChange(0.0, 0.3, 1)
+        val constraint = ApproxUniquenessConstraint("count")
+        val actualAnomalies = strategy.detect(wikiClickStream
+                .windowAll(GlobalWindows.create())
+                .trigger(CountTrigger.of(windowSize))
+                .aggregate(constraint.getAggregateFunction(wikiClickStream.type, wikiClickStream.executionConfig)))
         //sink
         actualAnomalies!!.print("AnomalyCheckResult stream output")
         val jobExecutionResult = env.execute()
