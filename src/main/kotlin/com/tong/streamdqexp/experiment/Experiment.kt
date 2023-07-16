@@ -25,7 +25,7 @@ class Experiment {
 
     private var util = ExperimentUtil()
     private val RUNTIME_OUTPUT_FILE_PATH =
-            "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/runtime.csv"
+            "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/runtime-new.csv"
     private val LATENCY_OUTPUT_FILE_PATH =
             "/Users/wutong/Desktop/Thesis/streamdpexp/experimentresult/latency.csv"
     private val OVERHEAD_OUTPUT_FILE_PATH =
